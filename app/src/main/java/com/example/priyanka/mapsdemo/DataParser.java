@@ -19,8 +19,8 @@ public class DataParser {
     private HashMap<String, String> getPlace(JSONObject googlePlaceJson)
     {
         HashMap<String, String> googlePlaceMap = new HashMap<>();
-        String placeName = "--NA--";
-        String vicinity= "--NA--";
+        String placeName = "--KO--";
+        String vicinity= "--KO--";
         String latitude= "";
         String longitude="";
         String reference="";
@@ -55,21 +55,25 @@ public class DataParser {
         return googlePlaceMap;
 
     }
+
     private List<HashMap<String, String>>getPlaces(JSONArray jsonArray)
     {
         int count = jsonArray.length();
+        Log.d("getPlacesCount",""+count);
         List<HashMap<String, String>> placelist = new ArrayList<>();
         HashMap<String, String> placeMap = null;
 
         for(int i = 0; i<count;i++)
         {
             try {
+                Log.d("jsonArray.get",""+jsonArray.get(i));
                 placeMap = getPlace((JSONObject) jsonArray.get(i));
                 placelist.add(placeMap);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+        Log.d("placeList",""+placelist);
         return placelist;
     }
 
@@ -82,10 +86,14 @@ public class DataParser {
 
         try {
             jsonObject = new JSONObject(jsonData);
+            Log.d("jsonObject",""+jsonObject);
             jsonArray = jsonObject.getJSONArray("results");
+            Log.d("jsonArray",""+jsonArray);
+            Log.d("jsonLength",""+jsonArray.length());
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.d("jsonA",""+jsonArray);
         return getPlaces(jsonArray);
     }
 }

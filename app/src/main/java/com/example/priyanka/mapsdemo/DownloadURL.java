@@ -32,12 +32,19 @@ public class DownloadURL {
             StringBuffer sb = new StringBuffer();
 
             String line = "";
+            int i = 0;
             while((line = br.readLine()) != null)
             {
+                Log.d("roofi",Integer.toString(i));
+                i++;
+                Log.d("URLline",line);
                 sb.append(line);
             }
 
             data = sb.toString();
+            // StringBuffer 로 읽어 들인걸 스트링으로 변환
+            // 요청되어 반환된 값들 (id,image,타이틀) 이 담겨있다.
+            Log.d("URLdata",data);
             br.close();
 
         } catch (MalformedURLException e) {
@@ -51,6 +58,8 @@ public class DownloadURL {
         }
         Log.d("DownloadURL","Returning data= "+data);
 
+        //반환
         return data;
+
     }
 }

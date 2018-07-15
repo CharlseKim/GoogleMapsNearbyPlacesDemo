@@ -44,9 +44,10 @@ LocationListener{
     private GoogleApiClient client;
     private LocationRequest locationRequest;
     private Location lastlocation;
-    private Marker currentLocationmMarker;
+    private Marker currentLocationmMarker;  //지도에 표시되는 마커
     public static final int REQUEST_LOCATION_CODE = 99;
-    int PROXIMITY_RADIUS = 10000;
+    int PROXIMITY_RADIUS = 10000;   //검색범위
+
     double latitude,longitude;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,6 +183,8 @@ LocationListener{
                 mMap.clear();
                 String hospital = "hospital";
                 String url = getUrl(latitude, longitude, hospital);
+
+
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
 
@@ -202,12 +205,16 @@ LocationListener{
                 break;
             case R.id.B_restaurants:
                 mMap.clear();
-                String resturant = "restuarant";
-                url = getUrl(latitude, longitude, resturant);
+                String restaurant = "restaurant";
+                url = getUrl(latitude, longitude, restaurant);
+                //요청할 api 주소를 반환된다 요청할 곳의 위치정보(위도,경도)와 종류(음식)를 파라미터로 받음
+
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
+                //Object 배열에 0번 째에 GoogleMap 을 1번째에는 요청 api 주소
 
                 getNearbyPlacesData.execute(dataTransfer);
+                //Object 를 인자로 받음
                 Toast.makeText(MapsActivity.this, "Showing Nearby Restaurants", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.B_to:
@@ -217,6 +224,9 @@ LocationListener{
 
     private String getUrl(double latitude , double longitude , String nearbyPlace)
     {
+
+        //입력된 사용자의 위도,경도,장소타입 을 받아서
+        //조립한 후 String 으로 리턴
 
         StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlaceUrl.append("location="+latitude+","+longitude);

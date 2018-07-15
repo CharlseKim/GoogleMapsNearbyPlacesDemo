@@ -1,6 +1,7 @@
 package com.example.priyanka.mapsdemo;
 
 import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -9,23 +10,29 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 /**
  * @author Priyanka
  */
 
-class GetNearbyPlacesData extends AsyncTask<Object, String, String> {
+class GetPlacesData extends AsyncTask<Object, String, String> {
 
     private String googlePlacesData;
     private GoogleMap mMap;
     String url;
+    public RecyclerView recyclerView;
 
     @Override
     protected String doInBackground(Object... objects){
         mMap = (GoogleMap)objects[0];
         url = (String)objects[1];
+        recyclerView = (RecyclerView)objects[2];
 
         DownloadURL downloadURL = new DownloadURL();
         try {
@@ -40,17 +47,34 @@ class GetNearbyPlacesData extends AsyncTask<Object, String, String> {
 
     @Override
     protected void onPostExecute(String s){
-        Log.d("onPostExc",s);
-        List<HashMap<String, String>> nearbyPlaceList;
-        DataParser parser = new DataParser();
-        nearbyPlaceList = parser.parse(s);
-        Log.d("nearbyplacesdata",""+nearbyPlaceList);
-        for(int i = 0 ; i< nearbyPlaceList.size(); i++){
-            String place_name = nearbyPlaceList.get(i).get("place_name");
-            Log.d("place_name",place_name);
-        }
-        showNearbyPlaces(nearbyPlaceList);
+        ArrayList<PlaceItems> placelist = new ArrayList<>();
+        placelist = parseToJson(s);
+        ListAdapter listAdapter = new ListAdapter(placelist);
+        recyclerView.setAdapter(listAdapter);
 
+
+    }
+
+    private ArrayList<PlaceItems> parseToJson(String s){
+        ArrayList<PlaceItems> booklist = new ArrayList<>();
+        JSONObject jsonObject = null;
+
+        try{
+            jsonObject = new JSONObject(s);
+            JSONArray items = jsonObject.getJSONArray("results");
+            for(int i=0;i<items.length();i++){
+                JSONObject c = items.getJSONObject(i);
+                PlaceItems placeItems = new PlaceItems();
+                placeItems.setTitle(c.getString("name"));
+
+
+                booklist.add(placeItems);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return booklist;
     }
 
     private void showNearbyPlaces(List<HashMap<String, String>> nearbyPlaceList)

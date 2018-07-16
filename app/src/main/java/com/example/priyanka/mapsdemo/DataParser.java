@@ -10,11 +10,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Priyanka
- */
 
 public class DataParser {
+    //DataParsing 클래스
 
     private HashMap<String, String> getPlace(JSONObject googlePlaceJson)
     {

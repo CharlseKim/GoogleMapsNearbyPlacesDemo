@@ -57,18 +57,22 @@ LocationListener{
 
     public RecyclerView recyclerView;
 
+    //필드선언
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        //펄미션 체크
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             checkLocationPermission();
 
         }
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
+        //SupportMapFragment를 가져와 지도를 사용할 수 있음
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -82,12 +86,14 @@ LocationListener{
         LinearLayoutManager layoutManager = new GridLayoutManager(this,2);
 
         recyclerView.setLayoutManager(layoutManager);
+        //recyclerView 설정
 
 
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        //퍼미션권한 요청
         switch(requestCode)
         {
             case REQUEST_LOCATION_CODE:
@@ -97,6 +103,7 @@ LocationListener{
                     {
                         if(client == null)
                         {
+                            //Api 빌드
                             bulidGoogleApiClient();
                         }
                         mMap.setMyLocationEnabled(true);
@@ -104,25 +111,22 @@ LocationListener{
                 }
                 else
                 {
-                    Toast.makeText(this,"Permission Denied" , Toast.LENGTH_LONG).show();
+
                 }
         }
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @Override
+
+    //지도가 준비되면 호출된다.
+    //장소에 마커를 추가하거나 카메라를 움질일 수 있다
+   @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        //퍼미션체크
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            //API 빌드
             bulidGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
@@ -132,33 +136,45 @@ LocationListener{
 
 
     protected synchronized void bulidGoogleApiClient() {
+        //API 빌드
         client = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
         client.connect();
-        Log.d("apiclient","client is "+client);
+
 
     }
 
+    //위치 이동이 이뤄지면 호출된다.
     @Override
     public void onLocationChanged(Location location) {
 
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        lastlocation = location;
+        latitude = location.getLatitude();      //현재의 위도정보 가져오기
+        longitude = location.getLongitude();    //현재의 경도정보 가져오기
+        lastlocation = location;                //위치 저장
         if(currentLocationmMarker != null)
         {
-            currentLocationmMarker.remove();
+            currentLocationmMarker.remove();    //마커를 지움
 
         }
 
-        Log.d("lat = ",""+latitude);
+
+        //카메라 이동 처리에 필요한 클래스
         LatLng latLng = new LatLng(location.getLatitude() , location.getLongitude());
+
+        //Marker를 만든다
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
+        //마커의 위치설정
         markerOptions.title("Current Location");
+        //마커의 제목설정
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        //마커 아이콘 설정
         currentLocationmMarker = mMap.addMarker(markerOptions);
+        //마커추가
+
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        //이동처리
         mMap.animateCamera(CameraUpdateFactory.zoomBy(10));
+        //줌
 
         if(client != null)
         {
@@ -171,6 +187,8 @@ LocationListener{
         Object dataTransfer[] = new Object[5];
         GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
         GetPlacesData getPlacesData = new GetPlacesData();
+
+        //필드선언
 
         switch(v.getId())
         {
@@ -189,6 +207,7 @@ LocationListener{
 
                 //Object 배열에 0번 째에 GoogleMap 을 1번째에는 요청 api 주소
 
+                //장소데이터를 처리하고 화면에 뿌려주는 AsyncTask 호출
                 getPlacesData.execute(dataTransfer);
                 //Object 를 인자로 받음
                 Toast.makeText(MapsActivity.this, "Showing Nearby Restaurants", Toast.LENGTH_SHORT).show();
@@ -230,11 +249,13 @@ LocationListener{
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION ) == PackageManager.PERMISSION_GRANTED)
         {
             LocationServices.FusedLocationApi.requestLocationUpdates(client, locationRequest, this);
+            //위치업데이트
         }
     }
 
 
     public boolean checkLocationPermission()
+            //퍼미션체크
     {
         if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)  != PackageManager.PERMISSION_GRANTED )
         {
@@ -259,7 +280,9 @@ LocationListener{
     public void onConnectionSuspended(int i) {
     }
 
+
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        //연결실패
     }
 }

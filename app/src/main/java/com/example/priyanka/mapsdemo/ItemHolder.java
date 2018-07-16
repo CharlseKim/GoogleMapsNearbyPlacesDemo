@@ -8,16 +8,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/**
- * Created by JungHyun on 2018-06-03.
- */
-
 class ItemHolder extends RecyclerView.ViewHolder {
     public CardView cardView;
     public ImageView list_img;
     public TextView txt_title;
     public TextView txt_vicinity;
     public LinearLayout linearLayout;
+
+    //필드 선언
 
 
     public ItemHolder(View root) {
@@ -29,4 +27,5 @@ class ItemHolder extends RecyclerView.ViewHolder {
         linearLayout = (LinearLayout)root.findViewById(R.id.item);
 
     }
+    //viewHolder
 }

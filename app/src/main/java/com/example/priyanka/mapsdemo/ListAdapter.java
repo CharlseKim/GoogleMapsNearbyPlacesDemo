@@ -17,11 +17,6 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-
-/**
- * Created by JungHyun on 2018-06-03.
- */
-
 public class ListAdapter extends RecyclerView.Adapter<ItemHolder> {
     ArrayList<PlaceItems> Items;
 
@@ -31,6 +26,8 @@ public class ListAdapter extends RecyclerView.Adapter<ItemHolder> {
     TextView txt_title;
     TextView txt_vicinity;
     Context context;
+
+    //필드 선언
 
 
     public ListAdapter(ArrayList<PlaceItems> datas,Context context) {
@@ -58,9 +55,11 @@ public class ListAdapter extends RecyclerView.Adapter<ItemHolder> {
             Glide.with(context)
                     .load(Items.get(position).getImageUrl())
                     .into(list_img);
+            //이미지 uri에 있는 이미지를 holder의 list_img에 담음
         }
 
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+            //아이템 이 눌렸을 경우 상세보기 화면으로 사진uri 를 담아 넘겨줌
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context,DetailView.class);

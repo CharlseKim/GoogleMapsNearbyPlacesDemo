@@ -14,11 +14,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class DetailView extends AppCompatActivity {
-    String photouri = "d";
-
-
-
+    String photouri = "";
     private WebView mWebView;
+
+    //필드선언
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,13 +28,11 @@ public class DetailView extends AppCompatActivity {
 
         Intent intent = getIntent();
         photouri = intent.getStringExtra("Photos");
-
-        Log.d("intentURI",photouri);
-
-
+        //인텐트로 넘겨져온 사진uri
 
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        //webView 세팅 , 자바스크립트 기능을 허용
 
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
@@ -48,6 +45,7 @@ public class DetailView extends AppCompatActivity {
         mWebView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
+                //Alert 처리
                 new AlertDialog.Builder(view.getContext())
                         .setTitle("Alert")
                         .setMessage(message)
@@ -64,8 +62,8 @@ public class DetailView extends AppCompatActivity {
             }
 
             @Override
-            public boolean onJsConfirm(WebView view, String url, String message,
-                                       final JsResult result) {
+            public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
+                //Confirm 처리
                 new AlertDialog.Builder(view.getContext())
                         .setTitle("Confirm")
                         .setMessage(message)
@@ -87,12 +85,13 @@ public class DetailView extends AppCompatActivity {
                 return true;
             }
         });
-        Log.d("abc",photouri);
         mWebView.loadUrl(photouri);
+        //photoUri 로 불러옴
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //키가 눌렸을때 웹뷰에서 뒤로가기를 할 수 있으면 뒤로가기를 함
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (mWebView.canGoBack()) {
                 mWebView.goBack();

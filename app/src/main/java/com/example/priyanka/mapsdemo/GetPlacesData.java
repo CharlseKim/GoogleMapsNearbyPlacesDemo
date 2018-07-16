@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-/**
- * @author Priyanka
- */
+
 
 class GetPlacesData extends AsyncTask<Object, String, String> {
 
@@ -41,6 +39,8 @@ class GetPlacesData extends AsyncTask<Object, String, String> {
     public GoogleApiClient client;
     public Context context;
 
+    //필드선언
+
     @Override
     protected String doInBackground(Object... objects){
         mMap = (GoogleMap)objects[0];
@@ -49,31 +49,34 @@ class GetPlacesData extends AsyncTask<Object, String, String> {
         client = (GoogleApiClient)objects[3];
         context = (Context)objects[4];
 
-        Log.d("recylerViewL",""+recyclerView);
+
 
         DownloadURL downloadURL = new DownloadURL();
         try {
             googlePlacesData = downloadURL.readUrl(url);
-            Log.d("googlePlacesData ",googlePlacesData);
+            //url 읽어들어옴
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return googlePlacesData;
+        //onPostExecute가 실행됨
     }
 
     @Override
     protected void onPostExecute(String s){
         ArrayList<PlaceItems> placelist = new ArrayList<>();
         placelist = parseToJson(s);
+        //String 을 잘조합하여 ArrayList형태로 반환
         ListAdapter listAdapter = new ListAdapter(placelist,context);
         recyclerView.setAdapter(listAdapter);
-
 
     }
 
     public ArrayList<PlaceItems> parseToJson(String s){
-        ArrayList<PlaceItems> booklist = new ArrayList<>();
+        //String 처리함
+        ArrayList<PlaceItems> list = new ArrayList<>();
         JSONObject jsonObject = null;
         String string = null;
         PlaceItems placeItems = null;
@@ -87,20 +90,19 @@ class GetPlacesData extends AsyncTask<Object, String, String> {
             String place_id = null;
             for(int i=0;i<items.length();i++){
                 JSONObject c = items.getJSONObject(i);
-                Log.d("JSONOB",""+c);
+
 
 
                 if(c.has("photos")){
-                    Log.d("HaveKey",c.getString("name"));
+
 
                     JSONArray temps = (JSONArray) c.get("photos");
-                    Log.d("JSONAR",""+temps);
+
                     JSONObject temp = temps.getJSONObject(0);
-                    Log.d("tempL",""+temp);
-                    Log.d(("tempLL"),""+temp.get("html_attributions"));
+
 
                     String tempStr = temp.getString("html_attributions");
-                    Log.d("tempStr",tempStr);
+
 
                     int indexP = tempStr.indexOf("https:");
 
@@ -114,14 +116,18 @@ class GetPlacesData extends AsyncTask<Object, String, String> {
 
                     }
                     string = sbr.toString();
+                    //https:\/\/maps.google.com\/maps\/contrib\/105949256933641745835\/photos
+                    //https://maps.google.com/maps/contrib/105949256933641745838/photos
+                    //uri 형태에 맞게 변형
                     if(string!=null){
                         placeItems = new PlaceItems();
                         placeItems.setPhotos(string);
                         placeItems.setTitle(c.getString("name"));
                         placeItems.setVicinity(c.getString("vicinity"));
                         placeItems.setImageUrl(c.getString("icon"));
-                        Log.d("indexOf",string);
-                        booklist.add(placeItems);
+
+                        list.add(placeItems);
+                        //list에 add
                     }
 
 
@@ -139,31 +145,8 @@ class GetPlacesData extends AsyncTask<Object, String, String> {
             e.printStackTrace();
         }
 
-        return booklist;
+        return list;
     }
 
 
-
-    private void showNearbyPlaces(List<HashMap<String, String>> nearbyPlaceList)
-    {
-        for(int i = 0; i < nearbyPlaceList.size(); i++)
-        {
-            MarkerOptions markerOptions = new MarkerOptions();
-            HashMap<String, String> googlePlace = nearbyPlaceList.get(i);
-
-            String placeName = googlePlace.get("place_name");
-            String vicinity = googlePlace.get("vicinity");
-            double lat = Double.parseDouble( googlePlace.get("lat"));
-            double lng = Double.parseDouble( googlePlace.get("lng"));
-
-            LatLng latLng = new LatLng( lat, lng);
-            markerOptions.position(latLng);
-            markerOptions.title(placeName + " : "+ vicinity);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-
-            mMap.addMarker(markerOptions);
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
-        }
-    }
 }

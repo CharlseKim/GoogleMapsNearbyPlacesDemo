@@ -2,14 +2,18 @@
 package com.example.priyanka.mapsdemo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -25,11 +29,13 @@ public class ListAdapter extends RecyclerView.Adapter<ItemHolder> {
     CardView cardView;
     ImageView list_img;
     TextView txt_title;
+    TextView txt_vicinity;
+    Context context;
 
 
-    public ListAdapter(ArrayList<PlaceItems> datas) {
+    public ListAdapter(ArrayList<PlaceItems> datas,Context context) {
         this.Items = datas;
-
+        this.context = context;
     }
 
     @Override
@@ -40,13 +46,30 @@ public class ListAdapter extends RecyclerView.Adapter<ItemHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ItemHolder holder, int position) {
+    public void onBindViewHolder(ItemHolder holder, final int position) {
         cardView = holder.cardView;
         list_img = holder.list_img;
         txt_title = holder.txt_title;
-
+        txt_vicinity = holder.txt_vicinity;
 
         txt_title.setText(Items.get(position).getTitle());
+        txt_vicinity.setText(Items.get(position).getVicinity());
+        if(!Items.get(position).getImageUrl().isEmpty()){
+            Glide.with(context)
+                    .load(Items.get(position).getImageUrl())
+                    .into(list_img);
+        }
+
+        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context,DetailView.class);
+                intent.putExtra("Photos",Items.get(position).getPhotos());
+                Log.d("PhotosURL",Items.get(position).getPhotos());
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            }
+        });
 
 
     }

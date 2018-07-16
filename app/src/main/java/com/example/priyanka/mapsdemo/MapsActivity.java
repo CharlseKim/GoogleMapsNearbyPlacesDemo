@@ -50,7 +50,7 @@ LocationListener{
     private Location lastlocation;
     private Marker currentLocationmMarker;  //지도에 표시되는 마커
     public static final int REQUEST_LOCATION_CODE = 99;
-    int PROXIMITY_RADIUS = 10000;   //검색범위
+    int PROXIMITY_RADIUS = 5000;   //검색범위
 
     double latitude,longitude;
 
@@ -71,6 +71,7 @@ LocationListener{
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        mapFragment.getView().setVisibility(View.INVISIBLE);
 
         recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
 
@@ -144,6 +145,7 @@ LocationListener{
             currentLocationmMarker.remove();
 
         }
+
         Log.d("lat = ",""+latitude);
         LatLng latLng = new LatLng(location.getLatitude() , location.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
@@ -162,7 +164,7 @@ LocationListener{
 
     public void onClick(View v)
     {
-        Object dataTransfer[] = new Object[4];
+        Object dataTransfer[] = new Object[5];
         GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
         GetPlacesData getPlacesData = new GetPlacesData();
 
@@ -216,6 +218,7 @@ LocationListener{
             case R.id.B_schools:
                 mMap.clear();
                 String school = "school";
+
                 url = getUrl(latitude, longitude, school);
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
@@ -230,17 +233,23 @@ LocationListener{
                 //요청할 api 주소를 반환된다 요청할 곳의 위치정보(위도,경도)와 종류(음식)를 파라미터로 받음
                 Log.d("resclick",url);
                 Log.d("ObjectClint",""+client);
-
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
                 dataTransfer[2] = recyclerView;
                 dataTransfer[3] = client;
-                //Object 배열에 0번 째에 GoogleMap 을 1번째에는 요청 api 주소
+                dataTransfer[4] = getApplicationContext();
 
+                //Object 배열에 0번 째에 GoogleMap 을 1번째에는 요청 api 주소
 
                 getPlacesData.execute(dataTransfer);
                 //Object 를 인자로 받음
                 Toast.makeText(MapsActivity.this, "Showing Nearby Restaurants", Toast.LENGTH_SHORT).show();
+                recyclerView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("recyclerClick","Click");
+                    }
+                });
                 break;
             case R.id.B_to:
         }
@@ -255,9 +264,9 @@ LocationListener{
         StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlaceUrl.append("location="+latitude+","+longitude);
         googlePlaceUrl.append("&radius="+PROXIMITY_RADIUS);
-        googlePlaceUrl.append("&type="+nearbyPlace);
+        googlePlaceUrl.append("&types="+nearbyPlace);
         googlePlaceUrl.append("&sensor=true");
-        googlePlaceUrl.append("&key="+"AIzaSyBLEPBRfw7sMb73Mr88L91Jqh3tuE4mKsE");
+        googlePlaceUrl.append("&key="+"AIzaSyDW58Amxy2klMcesFN2OT6XzvZZAj3Zyp0");
 
         Log.d("MapsActivit", "url = "+googlePlaceUrl.toString());
 

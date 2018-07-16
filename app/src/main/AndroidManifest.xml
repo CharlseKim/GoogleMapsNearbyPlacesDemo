@@ -21,6 +21,7 @@
 
         <activity
             android:name=".MapsActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,7 +29,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ShowList"></activity>
+        <activity android:name=".ShowList" />
+        <activity android:name=".DetailView"></activity>
     </application>
 
 </manifest>

@@ -259,7 +259,7 @@ LocationListener{
         googlePlaceUrl.append("&sensor=true");
         googlePlaceUrl.append("&key="+"AIzaSyBLEPBRfw7sMb73Mr88L91Jqh3tuE4mKsE");
 
-        Log.d("MapsActivity", "url = "+googlePlaceUrl.toString());
+        Log.d("MapsActivit", "url = "+googlePlaceUrl.toString());
 
         return googlePlaceUrl.toString();
     }

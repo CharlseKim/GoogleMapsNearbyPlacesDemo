@@ -12,6 +12,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -32,6 +35,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -49,6 +53,10 @@ LocationListener{
     int PROXIMITY_RADIUS = 10000;   //검색범위
 
     double latitude,longitude;
+
+    public RecyclerView recyclerView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +71,16 @@ LocationListener{
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        LinearLayoutManager layoutManager = new GridLayoutManager(this,2);
+
+        recyclerView.setLayoutManager(layoutManager);
+
+
     }
 
     @Override
@@ -111,6 +129,7 @@ LocationListener{
     protected synchronized void bulidGoogleApiClient() {
         client = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
         client.connect();
+        Log.d("apiclient","client is "+client);
 
     }
 
@@ -143,8 +162,9 @@ LocationListener{
 
     public void onClick(View v)
     {
-        Object dataTransfer[] = new Object[2];
+        Object dataTransfer[] = new Object[4];
         GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
+        GetPlacesData getPlacesData = new GetPlacesData();
 
         switch(v.getId())
         {
@@ -208,19 +228,23 @@ LocationListener{
                 String restaurant = "restaurant";
                 url = getUrl(latitude, longitude, restaurant);
                 //요청할 api 주소를 반환된다 요청할 곳의 위치정보(위도,경도)와 종류(음식)를 파라미터로 받음
+                Log.d("resclick",url);
+                Log.d("ObjectClint",""+client);
 
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
+                dataTransfer[2] = recyclerView;
+                dataTransfer[3] = client;
                 //Object 배열에 0번 째에 GoogleMap 을 1번째에는 요청 api 주소
 
-                getNearbyPlacesData.execute(dataTransfer);
+
+                getPlacesData.execute(dataTransfer);
                 //Object 를 인자로 받음
                 Toast.makeText(MapsActivity.this, "Showing Nearby Restaurants", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.B_to:
         }
     }
-
 
     private String getUrl(double latitude , double longitude , String nearbyPlace)
     {

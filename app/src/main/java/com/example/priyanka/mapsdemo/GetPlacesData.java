@@ -1,9 +1,17 @@
 package com.example.priyanka.mapsdemo;
 
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.PlacePhotoMetadata;
+import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
+import com.google.android.gms.location.places.PlacePhotoMetadataResult;
+import com.google.android.gms.location.places.PlacePhotoResult;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -27,12 +35,16 @@ class GetPlacesData extends AsyncTask<Object, String, String> {
     private GoogleMap mMap;
     String url;
     public RecyclerView recyclerView;
+    public GoogleApiClient client;
 
     @Override
     protected String doInBackground(Object... objects){
         mMap = (GoogleMap)objects[0];
         url = (String)objects[1];
         recyclerView = (RecyclerView)objects[2];
+        client = (GoogleApiClient)objects[3];
+
+        Log.d("recylerViewL",""+recyclerView);
 
         DownloadURL downloadURL = new DownloadURL();
         try {
@@ -55,17 +67,29 @@ class GetPlacesData extends AsyncTask<Object, String, String> {
 
     }
 
-    private ArrayList<PlaceItems> parseToJson(String s){
+
+
+
+
+    public ArrayList<PlaceItems> parseToJson(String s){
         ArrayList<PlaceItems> booklist = new ArrayList<>();
         JSONObject jsonObject = null;
 
         try{
             jsonObject = new JSONObject(s);
             JSONArray items = jsonObject.getJSONArray("results");
+            PlacePhotoMetadataBuffer photoMetadataBuffer = null;
+            String place_id = null;
             for(int i=0;i<items.length();i++){
                 JSONObject c = items.getJSONObject(i);
+                Log.d("JSONOB",""+c);
                 PlaceItems placeItems = new PlaceItems();
                 placeItems.setTitle(c.getString("name"));
+                place_id = c.getString("id");
+                Log.d("place_id",place_id);
+                GoogleApiClient d = null;
+                Log.d("clientLog",""+client);
+
 
 
                 booklist.add(placeItems);
@@ -76,6 +100,8 @@ class GetPlacesData extends AsyncTask<Object, String, String> {
 
         return booklist;
     }
+
+
 
     private void showNearbyPlaces(List<HashMap<String, String>> nearbyPlaceList)
     {
